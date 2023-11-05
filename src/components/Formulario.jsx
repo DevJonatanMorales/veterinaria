@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-const [state, setStaet] = useState({});
+import React from 'react';
+
 export const Formulario = () => {
 	return <div>Formulario</div>;
 };

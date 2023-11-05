@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-const [state, setStaet] = useState({});
+import React from 'react';
+
 export const Listado = () => {
-  return (
-    <div>
-      Listado
-    </div>
-  );
-}
+	return <div>Listado</div>;
+};
