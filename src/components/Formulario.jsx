@@ -19,7 +19,6 @@ export const Formulario = ({
 
 	const validator = useRef(
 		new SimpleReactValidator({
-			locale: 'es',
 			messages: {
 				required: 'El campo :attribute es obligatorio.',
 				alpha_space: 'El campo :attribute solo debe contener letras.',
@@ -45,7 +44,7 @@ export const Formulario = ({
 					required: true,
 				},
 			},
-			atributeNames: {
+			attributeNames: {
 				nombre: 'Nombre',
 				propietario: 'Propietario',
 				identificacion: 'Identificacion',
@@ -92,6 +91,7 @@ export const Formulario = ({
 		objectPaciente.id = generarId();
 		setPacientes([...pacientes, objectPaciente]);
 		setPaciente({});
+		clearState();
 	};
 
 	const handleEditar = () => {
@@ -102,6 +102,7 @@ export const Formulario = ({
 		);
 		setPacientes(pacienteActualizado);
 		setPaciente({});
+		clearState();
 	};
 
 	const handleSubmit = e => {
@@ -129,33 +130,31 @@ export const Formulario = ({
 				handleAgregar,
 			);
 		}
-
-		clearState();
 	};
 
 	useEffect(() => {
 		if (Object.keys([paciente]).length) {
 			const { nombre, propietario, identificacion, email, fecha, sintomas } =
 				paciente;
-			setNombre(nombre);
-			setPropietario(propietario);
-			setEmail(email);
-			setFecha(fecha);
-			setIdentificacion(identificacion);
-			setSintomas(sintomas);
+			if (typeof nombre !== 'undefined') setNombre(nombre);
+			if (typeof propietario !== 'undefined') setPropietario(propietario);
+			if (typeof email !== 'undefined') setEmail(email);
+			if (typeof fecha !== 'undefined') setFecha(fecha);
+			if (typeof identificacion !== 'undefined') setIdentificacion(identificacion);				
+			if (typeof sintomas !== 'undefined') setSintomas(sintomas);
 		}
 	}, [paciente]);
 
 	return (
 		<div className='md:w-1/2 lg:2/5 mx-5' onSubmit={handleSubmit}>
 			<h1 className='font-black text-3xl text-center'>Seguimiento Pacientes</h1>
-			<p className='text-lg mt-5 text-center mb-10'>
+			<div className='text-lg mt-5 text-center mb-10'>
 				Añade Paciente y{' '}
 				<span className='text-indigo-600 font-bold'>Administralos</span>
-			</p>
+			</div>
 
 			<form className='bg-white shadow-md rounded-xl py-10 px-5 mb-10'>
-				{error && <Error>TODOS LOS CAMPOS SON OBLIGATORIOS</Error>}
+				<div>{error && <Error>TODOS LOS CAMPOS SON OBLIGATORIOS</Error>}</div>
 				<div className='mb-5'>
 					<label
 						className='block text-gray-700 uppercase font-bold'
@@ -175,13 +174,13 @@ export const Formulario = ({
 							setNombre(value);
 						}}
 					/>
-					<p className='mt-1 text-red-500 font-bold'>
+					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message(
 							'nombre',
 							nombre,
 							'required|alpha_space',
 						)}
-					</p>
+					</div>
 				</div>
 
 				<div className='mb-5'>
@@ -203,13 +202,13 @@ export const Formulario = ({
 							setPropietario(value);
 						}}
 					/>
-					<p className='mt-1 text-red-500 font-bold'>
+					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message(
 							'propietario',
 							propietario,
 							'required|alpha_space',
 						)}
-					</p>
+					</div>
 				</div>
 
 				<div className='mb-5'>
@@ -231,13 +230,13 @@ export const Formulario = ({
 							setIdentificacion(value);
 						}}
 					/>
-					<p className='mt-1 text-red-500 font-bold'>
+					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message(
 							'identificacion',
 							identificacion,
 							'required|regex',
 						)}
-					</p>
+					</div>
 				</div>
 
 				<div className='mb-5'>
@@ -259,9 +258,9 @@ export const Formulario = ({
 							setEmail(value);
 						}}
 					/>
-					<p className='mt-1 text-red-500 font-bold'>
+					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message('email', email, 'required|email')}
-					</p>
+					</div>
 				</div>
 
 				<div className='mb-5'>
@@ -283,9 +282,9 @@ export const Formulario = ({
 							setFecha(value);
 						}}
 					/>
-					<p className='mt-1 text-red-500 font-bold'>
+					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message('fecha', fecha, 'required|date')}
-					</p>
+					</div>
 				</div>
 
 				<div className='mb-5'>
@@ -307,9 +306,9 @@ export const Formulario = ({
 							setSintomas(value);
 						}}
 					/>
-					<p className='mt-1 text-red-500 font-bold'>
+					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message('sintomas', sintomas, 'required|min:20')}
-					</p>
+					</div>
 				</div>
 
 				<input
