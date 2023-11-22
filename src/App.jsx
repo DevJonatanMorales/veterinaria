@@ -6,6 +6,7 @@ import { Listado } from './components/ListadoPacientes';
 function App() {
 	const [pacientes, setPacientes] = useState([]);
 	const [paciente, setPaciente] = useState({});
+	const [rendeListo, setRendeListo] = useState(false);
 
 	const eliminaPaciente = id => {
 		const pacientesFiltrados = pacientes.filter(paciente => paciente.id !== id);
@@ -13,15 +14,12 @@ function App() {
 	};
 
 	const obtenerLS = () => {
-		console.log('obteniendo LS');
 		const pacientesLS = JSON.parse(localStorage.getItem('pacientes')) ?? [];
-		console.log(pacientesLS);
 		setPacientes(pacientesLS);
+		setRendeListo(true);
 	};
 
 	const agregaLS = () => {
-		console.log('agregando LS');
-		console.log(pacientes);
 		localStorage.setItem('pacientes', JSON.stringify(pacientes));
 	};
 
@@ -30,7 +28,7 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		agregaLS();
+		if(rendeListo) agregaLS();
 	}, [pacientes]);
 
 	return (
