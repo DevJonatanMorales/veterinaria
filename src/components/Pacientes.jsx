@@ -1,7 +1,7 @@
 import React from 'react';
 
 export const Pacientes = ({ paciente, setPaciente, eliminaPaciente }) => {
-	const { id, nombre, propietario, email, fecha, sintomas } = paciente;
+	const { id, nombre,identificacion, propietario, email, fecha, sintomas } = paciente;
 
 	const eliminarPaciente = () => {
 		const respuesta = confirm(
@@ -18,8 +18,13 @@ export const Pacientes = ({ paciente, setPaciente, eliminaPaciente }) => {
 			</p>
 
 			<p className='font-blod mb-3 text-gray-700 uppercase font-bold'>
-				Propietari:{' '}
+				Propietario:{' '}
 				<span className='font-normal normal-case'>{propietario}</span>
+			</p>
+
+			<p className='font-blod mb-3 text-gray-700 uppercase font-bold'>
+				Identificacion:{' '}
+				<span className='font-normal normal-case'>{identificacion}</span>
 			</p>
 
 			<p className='font-blod mb-3 text-gray-700 uppercase font-bold'>

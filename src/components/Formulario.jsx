@@ -1,73 +1,131 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useReducer } from 'react';
 import { Error } from './Error';
+import SimpleReactValidator from 'simple-react-validator';
 
-export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => {
+export const Formulario = ({
+	paciente,
+	pacientes,
+	setPacientes,
+	setPaciente,
+}) => {
 	const [nombre, setNombre] = useState('');
 	const [propietario, setPropietario] = useState('');
+	const [identificacion, setIdentificacion] = useState('');
 	const [email, setEmail] = useState('');
 	const [fecha, setFecha] = useState('');
 	const [sintomas, setSintomas] = useState('');
-	const [error, setError] = useState(false)
+	const [error, setError] = useState(false);
+
+	const validator = useRef(
+		new SimpleReactValidator({
+			locale: 'es',
+			messages: {
+				required: 'El campo :attribute es obligatorio.',
+				alpha_space: 'El campo :attribute solo debe contener letras.',
+				regex: 'El campo :attribute debe contener solo caracteres numéricos.',
+				email:
+					'Por favor, introduce un correo electrónico válido en el campo :attribute.',
+				date: 'El campo :attribute debe ser una fecha válida.',
+				min: 'La descripcion aun es muy corta.',
+			},
+			validators: {
+				regex: {
+					message: 'El campo :attribute debe contener solo numeros.',
+					rule: (val, params, validator) => {
+						return validator.helpers.testRegex(val, /^[0-9]{8,14}$/);
+					},
+					required: true,
+				},
+				date: {
+					message: 'El campo :attribute debe ser una fecha válida.',
+					rule: (val, params, validator) => {
+						return validator.helpers.testRegex(val, /^\d{4}-\d{2}-\d{2}$/);
+					},
+					required: true,
+				},
+			},
+			atributeNames: {
+				nombre: 'Nombre',
+				propietario: 'Propietario',
+				identificacion: 'Identificacion',
+				email: 'Email',
+				fecha: 'fecha',
+				sintomas: 'Sintomas',
+			},
+		}),
+	);
 
 	const generarId = () => {
-		const random = Math.random().toString(36).substr(2)
-		const date = Date.now().toString(36)
+		const random = Math.random().toString(36).substr(2);
+		const date = Date.now().toString(36);
 
-		return random + date
-	}
-	
+		return random + date;
+	};
+
 	const clearState = () => {
-		setError(false)
+		setError(false);
 		setNombre('');
-    setPropietario('');
-    setEmail('');
-    setFecha('');
-    setSintomas('');
-	}
+		setPropietario('');
+		setEmail('');
+		setFecha('');
+		setSintomas('');
+		setIdentificacion('');
+	};
 
-	const handleSubmit = (e) => {
-		e.preventDefault()
-		if ([nombre, propietario, email, fecha, sintomas].includes('')) {
-			setError(true)
-			return
-		} 
-		
-		setError(false)
+	const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+	const handleSubmit = e => {
+		e.preventDefault();
+		if (!validator.current.allValid()) {
+			validator.current.showMessages();
+			forceUpdate();
+			setError(true);
+			return;
+		} else {
+			setError(false);
+			validator.current.hideMessages();
+		}
+
 		const objectPaciente = {
 			nombre,
-      propietario,
-      email,
-      fecha,
-      sintomas,
-		}
+			propietario,
+			identificacion,
+			email,
+			fecha,
+			sintomas,
+		};
 
-		if(paciente.id){
-			objectPaciente.id = paciente.id
-			const pacienteActualizado = pacientes.map(pacienteState => pacienteState.id === paciente.id ? objectPaciente : pacienteState)
-			setPacientes(pacienteActualizado)
-			setPaciente({})
+		if (paciente.id) {
+			objectPaciente.id = paciente.id;
+			const pacienteActualizado = pacientes.map(pacienteState =>
+				pacienteState.id === paciente.id ? objectPaciente : pacienteState,
+			);
+			setPacientes(pacienteActualizado);
+			setPaciente({});
 		} else {
-			objectPaciente.id = generarId()
-			setPacientes([...pacientes, objectPaciente])
-			setPaciente({})
+			objectPaciente.id = generarId();
+			setPacientes([...pacientes, objectPaciente]);
+			setPaciente({});
 		}
 
-		clearState()
-	}
+		clearState();
+	};
 
 	useEffect(() => {
-		if(Object.keys([paciente]).length){
-			const { nombre, propietario, email, fecha, sintomas } = paciente
-			setNombre(nombre)
-			setPropietario(propietario)
-			setEmail(email)
-			setFecha(fecha)
-			setSintomas(sintomas)
+		if (Object.keys([paciente]).length) {
+			const { nombre, propietario, identificacion, email, fecha, sintomas } =
+				paciente;
+			setNombre(nombre);
+			setPropietario(propietario);
+			setEmail(email);
+			setFecha(fecha);
+			setIdentificacion(identificacion);
+			setSintomas(sintomas);
 		}
-	}, [paciente])
+	}, [paciente]);
 
 	return (
-		<div className='md:w-1/2 lg:2/5 mx-5' onSubmit={handleSubmit} >
+		<div className='md:w-1/2 lg:2/5 mx-5' onSubmit={handleSubmit}>
 			<h1 className='font-black text-3xl text-center'>Seguimiento Pacientes</h1>
 			<p className='text-lg mt-5 text-center mb-10'>
 				Añade Paciente y{' '}
@@ -75,9 +133,7 @@ export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => 
 			</p>
 
 			<form className='bg-white shadow-md rounded-xl py-10 px-5 mb-10'>
-				{error && (
-					<Error>TODOS LOS CAMPOS SON OBLIGATORIOS</Error>
-				)}
+				{error && <Error>TODOS LOS CAMPOS SON OBLIGATORIOS</Error>}
 				<div className='mb-5'>
 					<label
 						className='block text-gray-700 uppercase font-bold'
@@ -97,6 +153,13 @@ export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => 
 							setNombre(value);
 						}}
 					/>
+					<p className='mt-1 text-red-500 font-bold'>
+						{validator.current.message(
+							'nombre',
+							nombre,
+							'required|alpha_space',
+						)}
+					</p>
 				</div>
 
 				<div className='mb-5'>
@@ -114,10 +177,45 @@ export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => 
 						placeholder='Nombre del propietario'
 						value={propietario}
 						onChange={e => {
-              const { value } = e.target;
-              setPropietario(value);
-            }}
+							const { value } = e.target;
+							setPropietario(value);
+						}}
 					/>
+					<p className='mt-1 text-red-500 font-bold'>
+						{validator.current.message(
+							'propietario',
+							propietario,
+							'required|alpha_space',
+						)}
+					</p>
+				</div>
+
+				<div className='mb-5'>
+					<label
+						className='block text-gray-700 uppercase font-bold'
+						htmlFor='txtPropietario'
+					>
+						Identificacion:
+					</label>
+					<input
+						className='border-2 w-full p-2 mt-2 placeholder-gray-400 rounded-md'
+						type='text'
+						name='txtPropietario'
+						id='txtPropietario'
+						placeholder='Nombre del propietario'
+						value={identificacion}
+						onChange={e => {
+							const { value } = e.target;
+							setIdentificacion(value);
+						}}
+					/>
+					<p className='mt-1 text-red-500 font-bold'>
+						{validator.current.message(
+							'identificacion',
+							identificacion,
+							'required|regex',
+						)}
+					</p>
 				</div>
 
 				<div className='mb-5'>
@@ -135,10 +233,13 @@ export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => 
 						placeholder='Email'
 						value={email}
 						onChange={e => {
-              const { value } = e.target;
-              setEmail(value);
-            }}
+							const { value } = e.target;
+							setEmail(value);
+						}}
 					/>
+					<p className='mt-1 text-red-500 font-bold'>
+						{validator.current.message('email', email, 'required|email')}
+					</p>
 				</div>
 
 				<div className='mb-5'>
@@ -156,10 +257,13 @@ export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => 
 						placeholder='Alta'
 						value={fecha}
 						onChange={e => {
-              const { value } = e.target;
-              setFecha(value);
-            }}
+							const { value } = e.target;
+							setFecha(value);
+						}}
 					/>
+					<p className='mt-1 text-red-500 font-bold'>
+						{validator.current.message('fecha', fecha, 'required|date')}
+					</p>
 				</div>
 
 				<div className='mb-5'>
@@ -177,10 +281,13 @@ export const Formulario = ({paciente, pacientes, setPacientes, setPaciente}) => 
 						placeholder='Describe los sintomas'
 						value={sintomas}
 						onChange={e => {
-              const { value } = e.target;
-              setSintomas(value);
-            }}
+							const { value } = e.target;
+							setSintomas(value);
+						}}
 					/>
+					<p className='mt-1 text-red-500 font-bold'>
+						{validator.current.message('sintomas', sintomas, 'required|min:20')}
+					</p>
 				</div>
 
 				<input
