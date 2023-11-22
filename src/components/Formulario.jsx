@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, useReducer } from 'react';
 import { Error } from './Error';
 import SimpleReactValidator from 'simple-react-validator';
+import { eventAlert } from '../hook/Alerts';
 
 export const Formulario = ({
 	paciente,
@@ -74,6 +75,35 @@ export const Formulario = ({
 
 	const [, forceUpdate] = useReducer(x => x + 1, 0);
 
+	const generarPayload = () => {
+		const objectPaciente = {
+			nombre,
+			propietario,
+			identificacion,
+			email,
+			fecha,
+			sintomas,
+		};
+		return objectPaciente;
+	};
+
+	const handleAgregar = () => {
+		const objectPaciente = generarPayload();
+		objectPaciente.id = generarId();
+		setPacientes([...pacientes, objectPaciente]);
+		setPaciente({});
+	};
+
+	const handleEditar = () => {
+		const objectPaciente = generarPayload();
+		objectPaciente.id = paciente.id;
+		const pacienteActualizado = pacientes.map(pacienteState =>
+			pacienteState.id === paciente.id ? objectPaciente : pacienteState,
+		);
+		setPacientes(pacienteActualizado);
+		setPaciente({});
+	};
+
 	const handleSubmit = e => {
 		e.preventDefault();
 		if (!validator.current.allValid()) {
@@ -86,26 +116,18 @@ export const Formulario = ({
 			validator.current.hideMessages();
 		}
 
-		const objectPaciente = {
-			nombre,
-			propietario,
-			identificacion,
-			email,
-			fecha,
-			sintomas,
-		};
-
 		if (paciente.id) {
-			objectPaciente.id = paciente.id;
-			const pacienteActualizado = pacientes.map(pacienteState =>
-				pacienteState.id === paciente.id ? objectPaciente : pacienteState,
+			eventAlert(
+				'¿Esta seguro de editar el paciente?',
+				'ADMINISTRACION',
+				handleEditar,
 			);
-			setPacientes(pacienteActualizado);
-			setPaciente({});
 		} else {
-			objectPaciente.id = generarId();
-			setPacientes([...pacientes, objectPaciente]);
-			setPaciente({});
+			eventAlert(
+				'¿Esta seguro de agregar el paciente?',
+				'ADMINISTRACION',
+				handleAgregar,
+			);
 		}
 
 		clearState();

@@ -1,14 +1,18 @@
 import React from 'react';
+import { eventAlert } from '../hook/Alerts';
 
 export const Pacientes = ({ paciente, setPaciente, eliminaPaciente }) => {
-	const { id, nombre,identificacion, propietario, email, fecha, sintomas } = paciente;
+	const { id, nombre, identificacion, propietario, email, fecha, sintomas } =
+		paciente;
 
-	const eliminarPaciente = () => {
-		const respuesta = confirm(
-			'¿Estas seguro de eliminar este paciente ' + nombre + '?',
+	const handelEliminar = () => eliminaPaciente(id);
+	
+	const question = () => {
+		eventAlert(
+			`¿Estas seguro de eliminar el paciente ${nombre}?`,
+			'ADMINISTRACION',
+			handelEliminar
 		);
-		if (!respuesta) return;
-		eliminaPaciente(id);
 	};
 
 	return (
@@ -51,7 +55,7 @@ export const Pacientes = ({ paciente, setPaciente, eliminaPaciente }) => {
 				<button
 					className='py-2 px-10 bg-red-600  hover:bg-red-700 text-white rounded-md font-bold md:flex md:flex-direction'
 					type='button'
-					onClick={eliminarPaciente}
+					onClick={question}
 				>
 					ELIMINAR
 				</button>
