@@ -173,6 +173,7 @@ export const Formulario = ({
 							const { value } = e.target;
 							setNombre(value);
 						}}
+						onKeyUp={() => {validator.current.showMessageFor('nombre')}}
 					/>
 					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message(
@@ -201,6 +202,7 @@ export const Formulario = ({
 							const { value } = e.target;
 							setPropietario(value);
 						}}
+						onKeyUp={() => {validator.current.showMessageFor('propietario')}}
 					/>
 					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message(
@@ -227,8 +229,9 @@ export const Formulario = ({
 						value={identificacion}
 						onChange={e => {
 							const { value } = e.target;
-							setIdentificacion(value);
+							setIdentificacion(value)
 						}}
+						onKeyUp={() => {validator.current.showMessageFor('identificacion')}}
 					/>
 					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message(
@@ -257,6 +260,7 @@ export const Formulario = ({
 							const { value } = e.target;
 							setEmail(value);
 						}}
+						onKeyUp={() => {validator.current.showMessageFor('email')}}
 					/>
 					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message('email', email, 'required|email')}
@@ -281,6 +285,7 @@ export const Formulario = ({
 							const { value } = e.target;
 							setFecha(value);
 						}}
+						onKeyUp={() => {validator.current.showMessageFor('fecha')}}
 					/>
 					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message('fecha', fecha, 'required|date')}
@@ -305,6 +310,7 @@ export const Formulario = ({
 							const { value } = e.target;
 							setSintomas(value);
 						}}
+						onKeyUp={() => {validator.current.showMessageFor('sintomas')}}
 					/>
 					<div className='mt-1 text-red-500 font-bold'>
 						{validator.current.message('sintomas', sintomas, 'required|min:20')}
